@@ -102,7 +102,7 @@ produits:
         prix: 35.00
         tailles: ["S", "M", "L", "XL", "2XL"]
         sku:
-          Blanc: "ERI-ATH-TEC-MX-BL"
+          Blanc: "erima-tech-1"
           Noir:  "ERI-ATH-TEC-MX-NR"
       enfants:
         prix: 33.00
