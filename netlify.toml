@@ -1,0 +1,71 @@
+# ============================================================
+# Configuration Netlify - Catalogue Vestimentaire SRR
+# ============================================================
+# Netlify lit ce fichier pour savoir comment builder et publier
+# le site. Les variables d'environnement (GOOGLE_SCRIPT_URL,
+# CLUB_EMAIL, CLUB_IBAN) se définissent dans l'UI Netlify :
+#   Site settings -> Environment variables
+# Modifier une variable = cliquer "Redeploy" pour l'appliquer.
+# ============================================================
+
+[build]
+  # Installe les dépendances Python puis lance le build
+  command = "pip install -r build/requirements.txt && python3 build/build.py --source . --output dist"
+  publish = "dist"
+
+[build.environment]
+  # Netlify propose Python 3.8 par défaut, on force une version récente
+  # (reportlab, pillow et pyyaml sont tous compatibles >=3.10).
+  PYTHON_VERSION = "3.11"
+
+# ============================================================
+# Headers : cache agressif sur les assets immuables, pas de
+# cache sur le HTML (pour voir les mises à jour rapidement)
+# ============================================================
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/js/runtime-config.js"
+  [headers.values]
+    # Contient la config injectée au build — pas de cache pour
+    # qu'un "Redeploy" après changement d'env var soit visible tout de suite.
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, immutable"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, immutable"
+
+[[headers]]
+  for = "/catalogue.pdf"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Content-Disposition = "inline; filename=\"catalogue-srr.pdf\""
+
+# ============================================================
+# En-têtes de sécurité basiques
+# ============================================================
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

@@ -37,6 +37,9 @@ service-account*.json
 Thumbs.db
 desktop.ini
 
+# --- Netlify CLI local ---
+.netlify/
+
 # --- Éditeurs ---
 .vscode/
 .idea/

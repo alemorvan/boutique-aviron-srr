@@ -489,6 +489,40 @@ def _today_fr() -> str:
 # ==========================================================
 # Entrée principale
 # ==========================================================
+def write_runtime_config_js(dist: Path) -> dict:
+    """
+    Génère dist/js/runtime-config.js à partir des variables d'environnement.
+
+    Équivalent build-time de docker/docker-entrypoint.sh.
+    Utile pour les hébergeurs qui builder depuis le source (Netlify, Vercel…)
+    et qui n'ont pas de phase "runtime" d'injection.
+
+    Reconnaît les mêmes variables que l'entrypoint Docker :
+      - GOOGLE_SCRIPT_URL
+      - CLUB_EMAIL
+      - CLUB_IBAN
+
+    Si aucune des variables n'est définie, le fichier est tout de même créé
+    avec des valeurs vides (l'application reste fonctionnelle en mode PDF seul).
+    """
+    cfg = {
+        "googleScriptUrl": os.environ.get("GOOGLE_SCRIPT_URL", "").strip(),
+        "clubEmailOverride": os.environ.get("CLUB_EMAIL", "").strip(),
+        "clubIbanOverride": os.environ.get("CLUB_IBAN", "").strip(),
+    }
+    out = dist / "js" / "runtime-config.js"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    body = (
+        "/* Auto-généré par build.py au moment du build "
+        "— ne pas éditer. */\n"
+        "window.RUNTIME_CONFIG = "
+        + json.dumps(cfg, ensure_ascii=False, indent=2)
+        + ";\n"
+    )
+    out.write_text(body, encoding="utf-8")
+    return cfg
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Build du catalogue SRR")
     parser.add_argument("--source", default=".", help="Racine du projet")
@@ -524,6 +558,16 @@ def main() -> int:
     js_out.parent.mkdir(parents=True, exist_ok=True)
     write_products_data_js(data, js_out)
     print(f"OK données embarquées : {js_out.relative_to(dist)}")
+
+    # 2b. Générer runtime-config.js depuis les env vars (pour Netlify, etc.)
+    #     Sur déploiement Docker, ce fichier est écrasé au démarrage par
+    #     docker-entrypoint.sh avec les mêmes valeurs — pas de conflit.
+    cfg = write_runtime_config_js(dist)
+    set_keys = [k for k, v in cfg.items() if v]
+    if set_keys:
+        print(f"OK runtime-config.js généré (env: {', '.join(set_keys)})")
+    else:
+        print("OK runtime-config.js généré (aucune variable d'env — mode PDF seul)")
 
     # 3. Générer le catalogue PDF
     if not args.skip_pdf:
