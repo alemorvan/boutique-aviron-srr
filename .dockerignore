@@ -1,0 +1,35 @@
+# Fichiers à NE PAS inclure dans l'image Docker
+
+# Documentation / sources
+README.md
+.git
+.gitignore
+.gitattributes
+
+# Éditeurs
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Google Apps Script (déployé séparément côté Google)
+google-apps-script/
+
+# Fichiers d'environnement / secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Artefacts CI/CD
+.github/
+.gitlab-ci.yml
+*.log
+
+# Docker lui-même
+Dockerfile
+.dockerignore
+docker-compose.yml
+docker-compose.*.yml

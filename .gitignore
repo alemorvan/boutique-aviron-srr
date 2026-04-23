@@ -1,0 +1,60 @@
+# ============================================================
+# .gitignore - Catalogue Vestimentaire SRR
+# ============================================================
+
+# --- Documents Word (catalogues fournisseur, bruts, etc.) ---
+*.docx
+*.doc
+*.docm
+*.dotx
+*.dotm
+
+# Fichier de lock créé par MS Word / LibreOffice quand un doc est ouvert
+~$*
+.~lock.*#
+
+# --- Artefacts de build ---
+dist/
+build/__pycache__/
+build/*.egg-info/
+*.pyc
+*.pyo
+__pycache__/
+
+# --- Secrets / environnement ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+credentials*.json
+service-account*.json
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Éditeurs ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+
+# --- Logs ---
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Node (si jamais utilisé pour de l'outillage) ---
+node_modules/
+
+# --- Notes : ce qui est explicitement CONSERVÉ ---
+# prompt.md        -> brief initial, gardé volontairement
+# config/*.yaml    -> template de catalogue, source de vérité du build
+# google-apps-script/ -> code Apps Script à déployer côté Google

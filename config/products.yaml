@@ -1,0 +1,371 @@
+# ============================================================================
+# CATALOGUE VESTIMENTAIRE - Société des régates Rennaises
+# Saison 2025-2026
+# ----------------------------------------------------------------------------
+# Ce fichier est utilisé UNIQUEMENT pour la GÉNÉRATION STATIQUE du site
+# (via build/build.py). Il n'est PAS servi au public et n'est PAS inclus
+# dans l'image Docker finale.
+#
+# Pour modifier le catalogue :
+#   1. Éditez ce fichier
+#   2. Rebuildez :                 docker compose build
+#   3. Relancez :                  docker compose up -d
+#
+# ----------------------------------------------------------------------------
+# Structure d'un article :
+#
+#   nom        : Nom affiché à l'utilisateur
+#   categorie  : ID d'une catégorie (tee_technique, veste, ...)
+#   marque     : Marque du fournisseur
+#   collection : Nom/année de la collection fournisseur (facultatif)
+#   modele     : Modèle fournisseur (facultatif)
+#   images     : Liste de noms de fichiers (dossier images/produits/)
+#   couleurs   : Liste des couleurs disponibles pour ce modèle
+#                (les couleurs sont identiques pour tous les genres d'un modèle)
+#   description: Description détaillée (facultative)
+#
+#   genres     : Dictionnaire des variantes de genre. Chaque clé est l'un de
+#                [hommes, femmes, mixtes, enfants] et contient :
+#                  prix       : Prix en € pour cette variante
+#                  tailles    : Liste des tailles spécifiques à ce genre
+#                  sku        : Dictionnaire {couleur: référence fournisseur}
+#                               Une référence fournisseur par
+#                               couple (modèle, genre, couleur).
+#
+# GOOGLE_SCRIPT_URL (enregistrement automatique dans Google Sheets) est
+# fourni au runtime par variable d'environnement Docker, pas dans ce YAML.
+#
+# NOTE : les références SKU sont actuellement des placeholders cohérents.
+#        À remplacer par les vraies références fournisseur quand elles sont
+#        disponibles (build.py vérifie l'unicité globale des SKU).
+# ============================================================================
+
+# ------------------------------------------------------------
+# Informations générales de la boutique
+# ------------------------------------------------------------
+boutique:
+  nom_club: "Société des Régates Rennaises"
+  nom_boutique: "Catalogue Vestimentaire"
+  email_contact: "contact@regatesrennaises.org"
+  devise: "€"
+  # Coordonnées de paiement — l'IBAN peut être surchargé au runtime via CLUB_IBAN
+  iban: "FRXX XXXX XXXX XXXX XXXX XXXX XXX"
+  ordre_cheque: "Société des Régates Rennaises"
+  # Logos (chemins relatifs au dossier assets/)
+  logo_simple: "logo_simple.png"        # en-tête du site
+  logo_detaille: "logo_detailles.jpg"   # en-tête des PDF
+
+# ------------------------------------------------------------
+# Catégories de vêtements (ordre d'affichage)
+# ------------------------------------------------------------
+categories:
+  - id: tee_technique
+    nom: "Tee-shirts techniques"
+    icone: "🏃"
+  - id: tee_coton
+    nom: "Tee-shirts coton"
+    icone: "👕"
+  - id: tee_polyester
+    nom: "Tee-shirts polyester"
+    icone: "🎽"
+  - id: veste
+    nom: "Vestes et sweats"
+    icone: "🧥"
+  - id: pantalon
+    nom: "Pantalons"
+    icone: "👖"
+  - id: polo
+    nom: "Polos"
+    icone: "👔"
+
+# ------------------------------------------------------------
+# Articles
+# ------------------------------------------------------------
+produits:
+
+  # ========== TEE-SHIRTS TECHNIQUES (Erima Athletic) ==========
+
+  - nom: "Tee-shirt technique"
+    categorie: tee_technique
+    marque: "Erima"
+    collection: "Athletic"
+    modele: "Tee-shirt technique manches courtes"
+    images:
+      - tee_shirt_technique_manches_courtes.png
+    description: >-
+      Tee-shirt technique près du corps, idéal pour les entraînements en
+      bateau. Matière fonctionnelle à séchage rapide, action anti-odeur,
+      sans couture pour plus de confort.
+    couleurs: ["Blanc", "Noir"]
+    genres:
+      mixtes:
+        prix: 35.00
+        tailles: ["S", "M", "L", "XL", "2XL"]
+        sku:
+          Blanc: "ERI-ATH-TEC-MX-BL"
+          Noir:  "ERI-ATH-TEC-MX-NR"
+      enfants:
+        prix: 33.00
+        tailles: ["3XS", "2XS", "XS"]
+        sku:
+          Blanc: "ERI-ATH-TEC-EN-BL"
+          Noir:  "ERI-ATH-TEC-EN-NR"
+
+  - nom: "Tee-shirt technique sans manches"
+    categorie: tee_technique
+    marque: "Erima"
+    collection: "Athletic"
+    modele: "Tee-shirt technique sans manches"
+    images: 
+    - tee_shirt_technique_sans_manches.png
+    description: >-
+      Tee-shirt technique sans manches, près du corps, pour les
+      entraînements. Matière à séchage rapide, action anti-odeur,
+      sans couture.
+    couleurs: ["Blanc", "Noir"]
+    genres:
+      hommes:
+        prix: 29.00
+        tailles: ["S", "M", "L", "XL", "2XL"]
+        sku:
+          Blanc: "ERI-ATH-TSM-HO-BL"
+          Noir:  "ERI-ATH-TSM-HO-NR"
+
+  - nom: "Tee-shirt technique manches longues"
+    categorie: tee_technique
+    marque: "Erima"
+    collection: "Athletic"
+    modele: "Tee-shirt technique manches longues"
+    images:
+    - tee_shirt_technique_manches_longues.png
+    description: >-
+      Tee-shirt technique manches longues, idéal pour les entraînements
+      par temps frais. Matière à séchage rapide, action anti-odeur,
+      sans couture.
+    couleurs: ["Blanc", "Noir"]
+    genres:
+      hommes:
+        prix: 38.00
+        tailles: ["S", "M", "L", "XL", "2XL"]
+        sku:
+          Blanc: "ERI-ATH-TML-HO-BL"
+          Noir:  "ERI-ATH-TML-HO-NR"
+      enfants:
+        prix: 35.00
+        tailles: ["3XS", "2XS", "XS"]
+        sku:
+          Blanc: "ERI-ATH-TML-EN-BL"
+          Noir:  "ERI-ATH-TML-EN-NR"
+
+  # ========== TEE-SHIRTS COTON (Erima TeamSport) ==========
+
+  - nom: "Tee-shirt coton"
+    categorie: tee_coton
+    marque: "Erima"
+    collection: "TeamSport"
+    modele: "Tee-shirt coton"
+    images:
+    - tee_shirt_coton_1.png
+    - tee_shirt_coton_2.png
+    description: >-
+      Tee-shirt en coton pour un port quotidien confortable.
+      Disponible en coupes hommes, femmes et enfants.
+    couleurs: ["Blanc", "Noir", "Rouge"]
+    genres:
+      hommes:
+        prix: 22.00
+        tailles: ["S", "M", "L", "XL", "2XL"]
+        sku:
+          Blanc: "ERI-TSP-COT-HO-BL"
+          Noir:  "ERI-TSP-COT-HO-NR"
+          Rouge: "ERI-TSP-COT-HO-RG"
+      femmes:
+        prix: 22.00
+        tailles: ["34", "36", "38", "40", "42", "44", "46", "48"]
+        sku:
+          Blanc: "ERI-TSP-COT-FE-BL"
+          Noir:  "ERI-TSP-COT-FE-NR"
+          Rouge: "ERI-TSP-COT-FE-RG"
+      enfants:
+        prix: 20.00
+        tailles: ["116", "128", "140", "152", "164"]
+        sku:
+          Blanc: "ERI-TSP-COT-EN-BL"
+          Noir:  "ERI-TSP-COT-EN-NR"
+          Rouge: "ERI-TSP-COT-EN-RG"
+
+  # ========== TEE-SHIRTS POLYESTER (Erima Liga) ==========
+
+  - nom: "Tee-shirt polyester manches courtes"
+    categorie: tee_polyester
+    marque: "Erima"
+    collection: "Liga"
+    modele: "Tee-shirt polyester manches courtes"
+    images:
+    - tee_shirt_polyester.png
+    description: >-
+      Tee-shirt en polyester, coupe ample et séchage rapide.
+      Empiècements mesh latéraux pour une aération optimale,
+      col rond renforcé.
+    couleurs: ["Rouge", "Noir"]
+    genres:
+      mixtes:
+        prix: 26.00
+        tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
+        sku:
+          Rouge: "ERI-LIG-PMC-MX-RG"
+          Noir:  "ERI-LIG-PMC-MX-NR"
+      enfants:
+        prix: 23.00
+        tailles: ["104", "116", "128", "140", "152", "164"]
+        sku:
+          Rouge: "ERI-LIG-PMC-EN-RG"
+          Noir:  "ERI-LIG-PMC-EN-NR"
+
+  - nom: "Tee-shirt polyester manches longues"
+    categorie: tee_polyester
+    marque: "Erima"
+    collection: "Liga"
+    modele: "Tee-shirt polyester manches longues"
+    images:
+    - tee_shirt_polyester_manches_longues.png
+    description: >-
+      Tee-shirt en polyester manches longues, matière légère
+      et séchage rapide. Empiècements mesh latéraux, col rond renforcé.
+    couleurs: ["Rouge", "Noir"]
+    genres:
+      mixtes:
+        prix: 27.00
+        tailles: ["S", "M", "L", "XL", "2XL", "3XL"]
+        sku:
+          Rouge: "ERI-LIG-PML-MX-RG"
+          Noir:  "ERI-LIG-PML-MX-NR"
+      enfants:
+        prix: 25.00
+        tailles: ["116", "128", "140", "152", "164"]
+        sku:
+          Rouge: "ERI-LIG-PML-EN-RG"
+          Noir:  "ERI-LIG-PML-EN-NR"
+
+  # ========== PULLS ET VESTES (Erima Liga) ==========
+
+  - nom: "Veste à capuche"
+    categorie: veste
+    marque: "Erima"
+    collection: "Liga"
+    modele: "Veste à capuche"
+    images:
+    - veste_a_capuche.png
+    description: >-
+      Veste à capuche 100 % polyester, coupe mixte.
+    couleurs: ["Noir", "Rouge"]
+    genres:
+      mixtes:
+        prix: 45.00
+        tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
+        sku:
+          Noir:  "ERI-LIG-VCC-MX-NR"
+          Rouge: "ERI-LIG-VCC-MX-RG"
+      enfants:
+        prix: 42.00
+        tailles: ["104", "116", "128", "140", "152", "164"]
+        sku:
+          Noir:  "ERI-LIG-VCC-EN-NR"
+          Rouge: "ERI-LIG-VCC-EN-RG"
+
+  - nom: "Veste d'entraînement"
+    categorie: veste
+    marque: "Erima"
+    collection: "Liga"
+    modele: "Veste d'entraînement"
+    images:
+    - veste_entrainement.png
+    description: >-
+      Veste d'entraînement 100 % polyester, coupe mixte.
+    couleurs: ["Noir", "Rouge"]
+    genres:
+      mixtes:
+        prix: 40.00
+        tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
+        sku:
+          Noir:  "ERI-LIG-VET-MX-NR"
+          Rouge: "ERI-LIG-VET-MX-RG"
+      enfants:
+        prix: 36.00
+        tailles: ["104", "116", "128", "140", "152", "164"]
+        sku:
+          Noir:  "ERI-LIG-VET-EN-NR"
+          Rouge: "ERI-LIG-VET-EN-RG"
+
+  - nom: "Sweat d'entraînement"
+    categorie: veste
+    marque: "Erima"
+    collection: "Liga"
+    modele: "Sweat d'entraînement"
+    images:
+    - sweat_entrainement.png
+    description: >-
+      Sweat d'entraînement 100 % polyester, coupe mixte.
+    couleurs: ["Noir", "Rouge"]
+    genres:
+      mixtes:
+        prix: 42.00
+        tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
+        sku:
+          Noir:  "ERI-LIG-SWE-MX-NR"
+          Rouge: "ERI-LIG-SWE-MX-RG"
+      enfants:
+        prix: 38.00
+        tailles: ["104", "116", "128", "140", "152", "164"]
+        sku:
+          Noir:  "ERI-LIG-SWE-EN-NR"
+          Rouge: "ERI-LIG-SWE-EN-RG"
+
+  # ========== PANTALONS (Miami) ==========
+
+  - nom: "Pantalon d'entraînement"
+    categorie: pantalon
+    marque: "Erima"
+    collection: "Miami"
+    modele: "Pantalon d'entraînement"
+    images:
+    - pantalon_entrainement.png
+    description: >-
+      Pantalon d'entraînement 100 % polyester. Coupe adaptée
+      hommes, femmes et enfants.
+    couleurs: ["Noir"]
+    genres:
+      hommes:
+        prix: 34.00
+        tailles: ["S", "M", "L", "XL", "2XL", "3XL"]
+        sku:
+          Noir: "ERI-MIA-PAN-HO-NR"
+      femmes:
+        prix: 34.00
+        tailles: ["34", "36", "38", "40", "42", "44", "46", "48"]
+        sku:
+          Noir: "ERI-MIA-PAN-FE-NR"
+      enfants:
+        prix: 30.00
+        tailles: ["116", "128", "140", "152", "164"]
+        sku:
+          Noir: "ERI-MIA-PAN-EN-NR"
+
+  # ========== POLOS (CMPT 3 Wings) ==========
+
+  - nom: "Polo polycoton unisexe"
+    categorie: polo
+    marque: "CMPT"
+    collection: "3 Wings"
+    modele: "Polo polycoton"
+    images:
+    - polo.png
+    description: >-
+      Polo polycoton unisexe, coupe mixte.
+    couleurs: ["Rouge"]
+    genres:
+      mixtes:
+        prix: 39.00
+        tailles: ["XXS", "XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"]
+        sku:
+          Rouge: "CMP-3W-POL-MX-RG"

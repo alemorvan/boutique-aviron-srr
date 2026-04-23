@@ -1,0 +1,32 @@
+services:
+  boutique:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: boutique-srr:latest
+    container_name: boutique-srr
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # URL de l'Apps Script Google pour l'enregistrement des commandes.
+      # Laissez vide pour fonctionner en mode PDF seul.
+      # Ex : https://script.google.com/macros/s/AKfycbx.../exec
+      GOOGLE_SCRIPT_URL: "${GOOGLE_SCRIPT_URL:-}"
+      # Permet de surcharger l'email de contact sans rebuilder :
+      CLUB_EMAIL: "${CLUB_EMAIL:-}"
+      # Permet de surcharger l'IBAN affiché (popup + PDF) sans rebuilder :
+      CLUB_IBAN: "${CLUB_IBAN:-}"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    # Sécurité
+    security_opt:
+      - no-new-privileges:true
+    read_only: false  # nginx a besoin d'écrire dans /tmp et /var/cache/nginx
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
