@@ -129,9 +129,9 @@ L'URL du google sheet devra être fourni en variable dans le docker-compose.yml 
 
 ## Page d'administration
 
-Un module d'administration viendra compléter la boutique.
+Un module d'administration viendra compléter la boutique dans une page séparée /admin.html.
 
-- Protection par mot de passe (défini dans les variables d'environnements)
+- Protection par mot de passe (défini dans les variables d'environnements). Le mot de passe est géré côté client.
 - Liste des commandes en cours issue du document google sheet (avec export excel possible),
 - liste des articles à commander issue du document google sheet (avec export excel possible)
 - Possibilité de passer les commandes à en cours, livrée, distributée, terminée (avec mise à jour du document google sheet)

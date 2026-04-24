@@ -36,6 +36,7 @@ RUN pip install --no-cache-dir -r build/requirements.txt
 COPY build/            ./build/
 COPY config/           ./config/
 COPY index.html        ./
+COPY admin.html        ./
 COPY css/              ./css/
 COPY js/               ./js/
 COPY assets/           ./assets/

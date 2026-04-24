@@ -68,6 +68,8 @@ COLOR_LIGHT_GRAY = colors.HexColor("#f5f5f7")
 COLOR_MEDIUM_GRAY = colors.HexColor("#d8d8dc")
 
 GENRES_VALIDES = ("hommes", "femmes", "mixtes", "enfants")
+TYPES_FLOCAGE_VALIDES = ("rien", "coeur", "dos", "coeur_et_dos")
+MARGE_COEFF = 1.20  # +20% sur (prix_réduit + coût flocage) pour obtenir le prix margé
 
 GENRE_LABELS = {
     "hommes": "HOMMES",
@@ -104,9 +106,25 @@ def load_config(yaml_path: Path) -> dict:
 
 def validate_config(data: dict) -> None:
     """Vérifie la cohérence de la structure du catalogue."""
-    for key in ("boutique", "categories", "produits"):
+    for key in ("boutique", "flocage", "categories", "produits"):
         if key not in data:
             raise ValueError(f"Clé manquante dans le YAML : '{key}'")
+
+    # Bloc 'flocage' : un tarif par type autorisé
+    flocage = data["flocage"]
+    if not isinstance(flocage, dict):
+        raise ValueError("La clé 'flocage' doit être un dictionnaire")
+    for t in TYPES_FLOCAGE_VALIDES:
+        if t not in flocage:
+            raise ValueError(
+                f"flocage : tarif manquant pour le type '{t}' "
+                f"(types attendus : {TYPES_FLOCAGE_VALIDES})"
+            )
+        v = flocage[t]
+        if not isinstance(v, (int, float)) or v < 0:
+            raise ValueError(
+                f"flocage.{t} doit être un nombre ≥ 0 (reçu : {v!r})"
+            )
 
     category_ids = {c["id"] for c in data["categories"]}
     # Clé : (bucket, sku) — permet à un article homme et un article enfant
@@ -157,14 +175,44 @@ def validate_config(data: dict) -> None:
             if not isinstance(variant, dict):
                 raise ValueError(
                     f"Produit '{prod_label}' / genre '{genre_key}' : doit être "
-                    f"un dictionnaire avec les clés prix / tailles / sku"
+                    f"un dictionnaire avec les clés prix_achat / taux_reduction / "
+                    f"type_flocage / prix_vente_final / tailles / sku"
                 )
-            for sub in ("prix", "tailles", "sku"):
+            for sub in ("prix_achat", "taux_reduction", "type_flocage",
+                        "prix_vente_final", "tailles", "sku"):
                 if sub not in variant:
                     raise ValueError(
                         f"Produit '{prod_label}' / genre '{genre_key}' : "
                         f"champ '{sub}' manquant"
                     )
+
+            # Types et bornes des champs numériques
+            pa = variant["prix_achat"]
+            if not isinstance(pa, (int, float)) or pa < 0:
+                raise ValueError(
+                    f"Produit '{prod_label}' / genre '{genre_key}' : "
+                    f"'prix_achat' doit être un nombre ≥ 0 (reçu : {pa!r})"
+                )
+            tr = variant["taux_reduction"]
+            if not isinstance(tr, (int, float)) or tr < 0 or tr >= 1:
+                raise ValueError(
+                    f"Produit '{prod_label}' / genre '{genre_key}' : "
+                    f"'taux_reduction' doit être dans [0, 1[ (reçu : {tr!r})"
+                )
+            pvf = variant["prix_vente_final"]
+            if not isinstance(pvf, (int, float)) or pvf <= 0:
+                raise ValueError(
+                    f"Produit '{prod_label}' / genre '{genre_key}' : "
+                    f"'prix_vente_final' doit être un nombre > 0 (reçu : {pvf!r})"
+                )
+            tf = variant["type_flocage"]
+            if tf not in TYPES_FLOCAGE_VALIDES:
+                raise ValueError(
+                    f"Produit '{prod_label}' / genre '{genre_key}' : "
+                    f"'type_flocage' inconnu '{tf}' "
+                    f"(valides : {TYPES_FLOCAGE_VALIDES})"
+                )
+
             if not isinstance(variant["tailles"], list) or not variant["tailles"]:
                 raise ValueError(
                     f"Produit '{prod_label}' / genre '{genre_key}' : "
@@ -206,10 +254,37 @@ def validate_config(data: dict) -> None:
 # ==========================================================
 # Génération du site statique
 # ==========================================================
+def _public_variant(variant: dict) -> dict:
+    """
+    Filtre une variante de genre pour n'exposer au public que les champs
+    utiles à la boutique : prix (ré-alias de prix_vente_final), tailles, sku.
+    Les champs prix_achat / taux_reduction / type_flocage ne sont PAS
+    exposés côté public.
+    """
+    return {
+        "prix": variant["prix_vente_final"],
+        "tailles": variant["tailles"],
+        "sku": variant["sku"],
+    }
+
+
+def _public_produit(p: dict) -> dict:
+    """Filtre un produit en exposant les genres via _public_variant."""
+    public = {k: v for k, v in p.items() if k != "genres"}
+    public["genres"] = {
+        g: _public_variant(v) for g, v in p.get("genres", {}).items()
+    }
+    return public
+
+
 def write_products_data_js(data: dict, out_path: Path) -> None:
     """
     Génère le fichier JS qui expose window.PRODUCTS_DATA.
     C'est ce fichier — et non le YAML — qui sera servi au navigateur.
+
+    Les informations commerciales internes (prix d'achat, taux de remise
+    fournisseur, type de flocage) sont retirées ici : seul prix_vente_final
+    est exposé, sous l'alias public 'prix' — le front-end reste inchangé.
     """
     public_data = {
         "boutique": {
@@ -221,7 +296,7 @@ def write_products_data_js(data: dict, out_path: Path) -> None:
             "logo_detaille": data["boutique"].get("logo_detaille", "logo_detailles.jpg"),
         },
         "categories": data["categories"],
-        "produits": data["produits"],
+        "produits": [_public_produit(p) for p in data["produits"]],
     }
     js_body = "/* Auto-généré par build.py — ne pas éditer directement. */\n"
     js_body += "window.PRODUCTS_DATA = "
@@ -230,11 +305,106 @@ def write_products_data_js(data: dict, out_path: Path) -> None:
     out_path.write_text(js_body, encoding="utf-8")
 
 
+# ==========================================================
+# Catalogue d'achat (données admin + calculs de marge)
+# ==========================================================
+def _round2(x: float) -> float:
+    """Arrondi à 2 décimales pour éviter les flottants moches en JSON."""
+    return round(float(x) + 1e-12, 2)
+
+
+def compute_admin_variant(produit: dict, genre_key: str,
+                          variant: dict, flocage: dict) -> dict:
+    """
+    Construit une ligne du catalogue d'achat à partir d'un couple
+    (produit, genre). Inclut les valeurs saisies et les champs calculés :
+
+      prix_reduit  = prix_achat * (1 - taux_reduction)
+      cout_flocage = flocage[type_flocage]
+      prix_marge   = (prix_reduit + cout_flocage) * MARGE_COEFF
+      marge_brute  = prix_marge - (prix_reduit + cout_flocage)
+                     (marge théorique +20 %, indicative)
+      benefice     = prix_vente_final - (prix_reduit + cout_flocage)
+                     (marge réelle, basée sur le prix de vente appliqué)
+    """
+    prix_achat = float(variant["prix_achat"])
+    taux = float(variant["taux_reduction"])
+    type_flocage = variant["type_flocage"]
+    cout_flocage = float(flocage[type_flocage])
+    prix_reduit = prix_achat * (1.0 - taux)
+    base = prix_reduit + cout_flocage
+    prix_marge = base * MARGE_COEFF
+    marge_brute = prix_marge - base
+    prix_vente_final = float(variant["prix_vente_final"])
+    benefice = prix_vente_final - base
+
+    return {
+        "produit": produit["nom"],
+        "categorie": produit["categorie"],
+        "marque": produit.get("marque", ""),
+        "collection": produit.get("collection", ""),
+        "modele": produit.get("modele", ""),
+        "genre": genre_key,
+        "genre_label": GENRE_LABELS.get(genre_key, genre_key.upper()),
+        "couleurs": produit.get("couleurs", []),
+        "tailles": variant.get("tailles", []),
+        "prix_achat": _round2(prix_achat),
+        "taux_reduction": _round2(taux),
+        "type_flocage": type_flocage,
+        "prix_reduit": _round2(prix_reduit),
+        "cout_flocage": _round2(cout_flocage),
+        "prix_marge": _round2(prix_marge),
+        "marge_brute": _round2(marge_brute),
+        "benefice": _round2(benefice),
+        "prix_vente_final": _round2(prix_vente_final),
+        "sku": variant.get("sku", {}),
+    }
+
+
+def build_admin_catalog(data: dict) -> list:
+    """
+    Construit la liste complète des lignes du catalogue d'achat —
+    une ligne par couple (produit, genre).
+    """
+    flocage = data["flocage"]
+    rows = []
+    for p in data["produits"]:
+        for genre_key, variant in (p.get("genres") or {}).items():
+            rows.append(compute_admin_variant(p, genre_key, variant, flocage))
+    return rows
+
+
+def write_admin_data_js(data: dict, out_path: Path) -> None:
+    """
+    Génère le fichier JS qui expose window.ADMIN_DATA pour /admin.html.
+    Contient les lignes du catalogue d'achat (prix d'achat, remise, flocage,
+    prix margé, marge effective) et la table des tarifs de flocage.
+
+    ⚠ Ce fichier est servi statiquement par nginx : il est accessible à
+    quiconque connaît l'URL /js/admin-data.js. Le gate par mot de passe
+    côté client évite la divulgation "par défaut", mais ne protège pas
+    d'une inspection délibérée. Considérer cela comme une information
+    interne non sensible (prix fournisseurs).
+    """
+    admin_data = {
+        "flocage": data["flocage"],
+        "marge_coeff": MARGE_COEFF,
+        "variants": build_admin_catalog(data),
+    }
+    js_body = "/* Auto-généré par build.py — ne pas éditer directement. */\n"
+    js_body += "window.ADMIN_DATA = "
+    js_body += json.dumps(admin_data, ensure_ascii=False, indent=2)
+    js_body += ";\n"
+    out_path.write_text(js_body, encoding="utf-8")
+
+
 def copy_static_files(src_root: Path, dist: Path) -> None:
     """Copie les fichiers à servir tels quels."""
     # Fichiers à la racine
-    for name in ("index.html",):
-        shutil.copy2(src_root / name, dist / name)
+    for name in ("index.html", "admin.html"):
+        src = src_root / name
+        if src.exists():
+            shutil.copy2(src, dist / name)
 
     # Dossiers à recopier intégralement
     for folder in ("css", "js", "assets", "images"):
@@ -453,7 +623,7 @@ def _build_product_cell(produit, images_dir,
             continue
         variant = genres[genre_key]
         label = GENRE_LABELS.get(genre_key, genre_key.upper())
-        prix = _fmt_eur(variant["prix"])
+        prix = _fmt_eur(variant["prix_vente_final"])
         elements.append(Paragraph(
             f"Modèle {label} — <font color='#c8102e'><b>{prix} TTC</b></font>",
             style_genre,
@@ -525,6 +695,7 @@ def write_runtime_config_js(dist: Path) -> dict:
       - GOOGLE_SCRIPT_URL
       - CLUB_EMAIL
       - CLUB_IBAN
+      - ADMIN_PASSWORD
 
     Si aucune des variables n'est définie, le fichier est tout de même créé
     avec des valeurs vides (l'application reste fonctionnelle en mode PDF seul).
@@ -533,6 +704,7 @@ def write_runtime_config_js(dist: Path) -> dict:
         "googleScriptUrl": os.environ.get("GOOGLE_SCRIPT_URL", "").strip(),
         "clubEmailOverride": os.environ.get("CLUB_EMAIL", "").strip(),
         "clubIbanOverride": os.environ.get("CLUB_IBAN", "").strip(),
+        "adminPassword": os.environ.get("ADMIN_PASSWORD", "").strip(),
     }
     out = dist / "js" / "runtime-config.js"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -577,11 +749,18 @@ def main() -> int:
     copy_static_files(src, dist)
     print("OK fichiers statiques copiés")
 
-    # 2. Générer products-data.js
+    # 2. Générer products-data.js (données publiques — filtrées)
     js_out = dist / "js" / "products-data.js"
     js_out.parent.mkdir(parents=True, exist_ok=True)
     write_products_data_js(data, js_out)
-    print(f"OK données embarquées : {js_out.relative_to(dist)}")
+    print(f"OK données publiques : {js_out.relative_to(dist)}")
+
+    # 2a. Générer admin-data.js (catalogue d'achat, calculs de marge)
+    admin_out = dist / "js" / "admin-data.js"
+    write_admin_data_js(data, admin_out)
+    nb_variants_admin = sum(len(p.get("genres", {})) for p in data["produits"])
+    print(f"OK catalogue d'achat : {admin_out.relative_to(dist)} "
+          f"({nb_variants_admin} lignes)")
 
     # 2b. Générer runtime-config.js depuis les env vars (pour Netlify, etc.)
     #     Sur déploiement Docker, ce fichier est écrasé au démarrage par
@@ -601,7 +780,7 @@ def main() -> int:
             size_kb = pdf_out.stat().st_size / 1024
             print(f"OK catalogue PDF : {pdf_out.relative_to(dist)} ({size_kb:.0f} Ko)")
         except Exception as exc:
-            print(f"! Echec génération PDF : {exc}", file=sys.stderr)
+            print(f"! Échec génération PDF : {exc}", file=sys.stderr)
 
     print(f"\nBuild terminé -> {dist}")
     return 0

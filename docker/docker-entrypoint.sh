@@ -12,10 +12,14 @@ CONFIG_FILE="/usr/share/nginx/html/js/runtime-config.js"
 #   GOOGLE_SCRIPT_URL : URL du endpoint Google Apps Script
 #   CLUB_EMAIL        : email de contact du club (override YAML)
 #   CLUB_IBAN         : IBAN pour virement SEPA (override YAML)
+#   ADMIN_PASSWORD    : mot de passe d'accès à admin.html
+#                       (rappel : gate UX seulement, le fichier est
+#                        servi en clair — ne pas réutiliser un mdp sensible)
 
 GOOGLE_SCRIPT_URL="${GOOGLE_SCRIPT_URL:-}"
 CLUB_EMAIL="${CLUB_EMAIL:-}"
 CLUB_IBAN="${CLUB_IBAN:-}"
+ADMIN_PASSWORD="${ADMIN_PASSWORD:-}"
 
 # Échappe les doubles-quotes et backslashes pour l'inclusion sûre en JS.
 escape_js() {
@@ -27,7 +31,8 @@ cat > "$CONFIG_FILE" <<EOF
 window.RUNTIME_CONFIG = {
   googleScriptUrl: "$(escape_js "$GOOGLE_SCRIPT_URL")",
   clubEmailOverride: "$(escape_js "$CLUB_EMAIL")",
-  clubIbanOverride: "$(escape_js "$CLUB_IBAN")"
+  clubIbanOverride: "$(escape_js "$CLUB_IBAN")",
+  adminPassword: "$(escape_js "$ADMIN_PASSWORD")"
 };
 EOF
 
@@ -35,6 +40,11 @@ if [ -n "$GOOGLE_SCRIPT_URL" ]; then
     echo "[entrypoint] runtime-config.js généré avec GOOGLE_SCRIPT_URL configuré."
 else
     echo "[entrypoint] runtime-config.js généré sans GOOGLE_SCRIPT_URL (mode PDF seul)."
+fi
+if [ -n "$ADMIN_PASSWORD" ]; then
+    echo "[entrypoint] ADMIN_PASSWORD configuré — /admin.html accessible."
+else
+    echo "[entrypoint] ADMIN_PASSWORD absent — /admin.html restera verrouillé."
 fi
 
 # Transfère l'exécution à nginx

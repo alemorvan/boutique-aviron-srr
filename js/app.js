@@ -416,6 +416,8 @@
       taille: opts.taille || '',
       couleur: opts.couleur || '',
       sku: opts.sku,
+      // Alias pour le Google Sheet : la colonne Référence = SKU
+      reference: opts.sku,
       prix: Number(opts.prix),
       qty: opts.qty || 1,
       image: (produit.images && produit.images[0]) || '',

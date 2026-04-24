@@ -17,6 +17,9 @@ services:
       CLUB_EMAIL: "${CLUB_EMAIL:-}"
       # Permet de surcharger l'IBAN affiché (popup + PDF) sans rebuilder :
       CLUB_IBAN: "${CLUB_IBAN:-}"
+      # Mot de passe d'accès à /admin.html (gate côté UX seulement).
+      # Laisser vide pour verrouiller complètement la page admin.
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD:-}"
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/healthz"]
       interval: 30s

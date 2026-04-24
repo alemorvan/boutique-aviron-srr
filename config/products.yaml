@@ -34,11 +34,18 @@
 #
 #   genres     : Dictionnaire des variantes de genre. Chaque clé est l'un de
 #                [hommes, femmes, mixtes, enfants] et contient :
-#                  prix       : Prix en € pour cette variante
-#                  tailles    : Liste des tailles spécifiques à ce genre
-#                  sku        : Dictionnaire {couleur: référence fournisseur}
-#                               Une référence fournisseur par
-#                               couple (modèle, genre, couleur).
+#                  prix_achat       : Prix fournisseur HT (€), avant remise
+#                  taux_reduction   : Remise fournisseur (ex: 0.40 = -40%)
+#                  type_flocage     : rien | coeur | dos | coeur_et_dos
+#                  prix_vente_final : Prix TTC affiché au public (€)
+#                  tailles          : Liste des tailles spécifiques à ce genre
+#                  sku              : Dictionnaire {couleur: référence
+#                                     fournisseur} — une référence par
+#                                     couple (modèle, genre, couleur).
+#
+# Les champs prix_achat, taux_reduction et type_flocage NE SONT PAS
+# affichés sur le site public. Ils ne sont utilisés que par le module
+# d'administration (catalogue d'achat) pour calculer la marge.
 #
 # GOOGLE_SCRIPT_URL (enregistrement automatique dans Google Sheets) est
 # fourni au runtime par variable d'environnement Docker, pas dans ce YAML.
@@ -71,6 +78,20 @@ boutique:
   logo_detaille: "logo_detailles.jpg"   # en-tête des PDF
 
 # ------------------------------------------------------------
+# Tarifs de flocage (en €) — utilisés par le catalogue d'achat
+# du module d'administration pour calculer le prix margé.
+#   rien         : pas de flocage sur l'article
+#   coeur        : logo poitrine uniquement
+#   dos          : marquage dos uniquement
+#   coeur_et_dos : les deux (somme des deux tarifs unitaires)
+# ------------------------------------------------------------
+flocage:
+  rien: 0.00
+  coeur: 2.50
+  dos: 6.00
+  coeur_et_dos: 8.50
+
+# ------------------------------------------------------------
 # Catégories de vêtements (ordre d'affichage)
 # ------------------------------------------------------------
 categories:
@@ -92,7 +113,9 @@ categories:
   - id: polo
     nom: "Polos"
     icone: "👔"
-
+  - id: divers
+    nom: "Divers"
+    icone: "🧦"
 # ------------------------------------------------------------
 # Articles
 # ------------------------------------------------------------
@@ -114,13 +137,19 @@ produits:
     couleurs: ["Blanc", "Noir"]
     genres:
       mixtes:
-        prix: 35.00
+        prix_achat: 35.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 35.00
         tailles: ["S", "M", "L", "XL", "2XL"]
         sku:
           Blanc: "2252117"
           Noir:  "2252116"
       enfants:
-        prix: 33.00
+        prix_achat: 33.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 33.00
         tailles: ["3XS", "2XS", "XS"]
         sku:
           Blanc: "2252117"
@@ -140,7 +169,10 @@ produits:
     couleurs: ["Blanc", "Noir"]
     genres:
       hommes:
-        prix: 29.00
+        prix_achat: 29.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 29.00
         tailles: ["S", "M", "L", "XL", "2XL"]
         sku:
           Blanc: "2282401"
@@ -160,13 +192,19 @@ produits:
     couleurs: ["Blanc", "Noir"]
     genres:
       hommes:
-        prix: 39.00
+        prix_achat: 40.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 38.00
         tailles: ["S", "M", "L", "XL", "2XL"]
         sku:
           Blanc: "2252103"
           Noir:  "2252101"
       enfants:
-        prix: 35.00
+        prix_achat: 35.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 35.00
         tailles: ["3XS", "XXS", "XS"]
         sku:
           Blanc: "2252103"
@@ -188,21 +226,30 @@ produits:
     couleurs: ["Blanc", "Noir", "Rouge"]
     genres:
       hommes:
-        prix: 22.00
+        prix_achat: 18.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 22.00
         tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
         sku:
           Blanc: "208331"
           Noir:  "208330"
           Rouge: "208332"
       femmes:
-        prix: 22.00
+        prix_achat: 18.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 22.00
         tailles: ["34", "36", "38", "40", "42", "44", "46", "48"]
         sku:
           Blanc: "208371"
           Noir:  "208370"
           Rouge: "208372"
       enfants:
-        prix: 20.00
+        prix_achat: 16.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 20.00
         tailles: ["116", "128", "140", "152", "164"]
         sku:
           Blanc: "208331"
@@ -225,13 +272,19 @@ produits:
     couleurs: ["Rouge", "Noir"]
     genres:
       mixtes:
-        prix: 26.00
+        prix_achat: 24.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 26.00
         tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
         sku:
           Rouge: "1082328"
           Noir:  "1082331"
       enfants:
-        prix: 23.00
+        prix_achat: 19.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 23.00
         tailles: ["104", "116", "128", "140", "152", "164"]
         sku:
           Rouge: "1082328"
@@ -250,13 +303,19 @@ produits:
     couleurs: ["Rouge", "Noir"]
     genres:
       mixtes:
-        prix: 26.00
+        prix_achat: 24.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 26.00
         tailles: ["S", "M", "L", "XL", "2XL", "3XL"]
         sku:
           Rouge: "3141818"
           Noir:  "3141821"
       enfants:
-        prix: 25.00
+        prix_achat: 21.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 25.00
         tailles: ["116", "128", "140", "152", "164"]
         sku:
           Rouge: "3141818"
@@ -279,12 +338,18 @@ produits:
     couleurs: ["Rouge"]
     genres:
       mixtes:
-        prix: 45.00
+        prix_achat: 49.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 45.00
         tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
         sku:
           Rouge: "1032326"
       enfants:
-        prix: 42.00
+        prix_achat: 44.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 42.00
         tailles: ["104", "116", "128", "140", "152", "164"]
         sku:
           Rouge: "1032326"
@@ -304,12 +369,18 @@ produits:
     couleurs: ["Rouge"]
     genres:
       mixtes:
-        prix: 40.00
+        prix_achat: 42.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 40.00
         tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
         sku:
           Rouge: "1032319"
       enfants:
-        prix: 36.00
+        prix_achat: 36.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 36.00
         tailles: ["104", "116", "128", "140", "152", "164"]
         sku:
           Rouge: "1032319"
@@ -328,12 +399,18 @@ produits:
     couleurs: ["Rouge"]
     genres:
       mixtes:
-        prix: 42.00
+        prix_achat: 44.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 42.00
         tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
         sku:
           Rouge: "1262301"
       enfants:
-        prix: 38.00
+        prix_achat: 39.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 38.00
         tailles: ["104", "116", "128", "140", "152", "164"]
         sku:
           Rouge: "1262301"
@@ -353,17 +430,26 @@ produits:
     couleurs: ["Noir"]
     genres:
       hommes:
-        prix: 34.00
+        prix_achat: 44.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "rien"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 34.00
         tailles: ["S", "M", "L", "XL", "2XL", "3XL"]
         sku:
           Noir: "1102401"
       femmes:
-        prix: 34.00
+        prix_achat: 44.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "rien"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 34.00
         tailles: ["34", "36", "38", "40", "42", "44", "46", "48"]
         sku:
           Noir: "1102403"
       enfants:
-        prix: 30.00
+        prix_achat: 39.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "rien"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 30.00
         tailles: ["116", "128", "140", "152", "164"]
         sku:
           Noir: "1102401"
@@ -377,24 +463,51 @@ produits:
     modele: "Polo polycoton"
     images:
     - polo.png
-    description: >-
+    description: |-
       Polo polycoton unisexe, coupe mixte.
-      Tissu piqué fin.
       - Coupe régulière
       - Poignets côtelés avec bandes contrastées
       - Hommes : Col polo avec boutonnière à 3 boutons
-      - Femmes: Col polo avec boutonnière à 4 boutons
+      - Femmes : Col polo avec boutonnière à 4 boutons
     couleurs: ["Rouge", "Noir"]
     genres:
       hommes:
-        prix: 39.00
+        prix_achat: 40.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 39.00
         tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
         sku:
           Rouge: "2112510"
           Noir: "2112511"
       femmes:
-        prix: 39.00
+        prix_achat: 40.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.40      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "coeur_et_dos"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 39.00
         tailles: ["34", "36", "38", "40", "42", "44", "46"]
         sku:
           Rouge: "2112537"
           Noir: "2112538"
+
+  # ========== POLOS (CMPT 3 Wings) ==========
+
+  - nom: "Chaussettes SRR"
+    categorie: divers
+    marque: "Chaussettes"
+    collection: ""
+    modele: "Chaussettes hautes rouges"
+    images:
+    - chaussettes.png
+    description: |-
+      Chaussettes officielles aux couleurs du club.
+    couleurs: ["Rouge"]
+    genres:
+      mixtes:
+        prix_achat: 8.00          # à remplir (prix fournisseur HT)
+        taux_reduction: 0.0      # taux de remise fournisseur (40% par défaut)
+        type_flocage: "rien"      # rien | coeur | dos | coeur_et_dos
+        prix_vente_final: 10.00
+        tailles: ["36-39", "40-42", "43-46"]
+        sku:
+          Rouge: "SRR-CHAUSS-R"
