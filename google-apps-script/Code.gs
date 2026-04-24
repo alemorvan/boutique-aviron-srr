@@ -185,7 +185,7 @@ function testerEnregistrement() {
       nom: 'Testeur',
       email: 'jean.testeur@example.com',
       telephone: '06 00 00 00 00',
-      categorieRameur: 'Senior',
+      categorieRameur: 'Sénior',
       commentaire: 'Commande de test',
     },
     items: [
