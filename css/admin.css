@@ -1,0 +1,362 @@
+/* ===================================================================
+   ADMINISTRATION - Catalogue Vestimentaire SRR
+   Styles spécifiques au module d'administration.
+   Réutilise les variables de css/style.css.
+   =================================================================== */
+
+.admin-body {
+  padding-top: 0;
+}
+
+/* ============= GATE (mot de passe) ============= */
+.admin-gate-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-app);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.admin-gate {
+  background: var(--bg-surface);
+  border: 1px solid var(--bordure);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--ombre-forte);
+  padding: 32px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+.admin-gate h1 {
+  font-size: 22px;
+  margin-bottom: 8px;
+  color: var(--texte);
+}
+
+.admin-gate p {
+  color: var(--texte-clair);
+  margin-bottom: 22px;
+  font-size: 14px;
+}
+
+.admin-gate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-gate-form input[type="password"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--bordure);
+  background: var(--bg-elevated);
+  color: var(--texte);
+  border-radius: var(--radius);
+  font-size: 16px;
+  transition: border-color var(--transition);
+}
+
+.admin-gate-form input[type="password"]:focus {
+  outline: none;
+  border-color: var(--rouge);
+}
+
+.admin-gate-error {
+  color: var(--rouge);
+  font-size: 13px;
+  min-height: 18px;
+  margin-top: -4px;
+}
+
+/* ============= TABS ============= */
+.admin-tabs {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--bordure);
+  display: flex;
+  gap: 4px;
+  padding: 0 24px;
+  overflow-x: auto;
+}
+
+.admin-tab {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--texte-clair);
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition);
+  white-space: nowrap;
+}
+
+.admin-tab:hover {
+  color: var(--texte);
+}
+
+.admin-tab.active {
+  color: var(--rouge);
+  border-bottom-color: var(--rouge);
+}
+
+.admin-tab .tab-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 8px;
+  background: var(--bg-subtle);
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--texte-clair);
+}
+
+.admin-tab.active .tab-badge {
+  background: var(--rouge);
+  color: #fff;
+}
+
+/* ============= MAIN ============= */
+.admin-main {
+  flex: 1;
+  padding: 24px;
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.admin-panel {
+  display: none;
+}
+
+.admin-panel.active {
+  display: block;
+}
+
+.panel-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.panel-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--texte);
+}
+
+.panel-subtitle {
+  font-size: 13px;
+  color: var(--texte-clair);
+  margin-top: 2px;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ============= TOOLBAR (filtres admin) ============= */
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--bordure);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+
+.admin-toolbar input[type="text"],
+.admin-toolbar select {
+  padding: 8px 10px;
+  border: 1px solid var(--bordure);
+  background: var(--bg-elevated);
+  color: var(--texte);
+  border-radius: var(--radius);
+  font-size: 14px;
+}
+
+.admin-toolbar input[type="text"] {
+  min-width: 220px;
+}
+
+.admin-toolbar .spacer {
+  flex: 1;
+}
+
+.admin-toolbar label {
+  font-size: 13px;
+  color: var(--texte-clair);
+  margin-right: 4px;
+}
+
+/* ============= TABLE ============= */
+.admin-table-wrapper {
+  background: var(--bg-surface);
+  border: 1px solid var(--bordure);
+  border-radius: var(--radius);
+  overflow: auto;
+  max-height: calc(100vh - 260px);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.admin-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--bg-subtle);
+  color: var(--texte);
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--bordure);
+  white-space: nowrap;
+}
+
+.admin-table tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--bordure);
+  vertical-align: top;
+  color: var(--texte);
+}
+
+.admin-table tbody tr:hover {
+  background: var(--bg-subtle);
+}
+
+.admin-table .numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.admin-table .muted {
+  color: var(--texte-clair);
+}
+
+.admin-table .wrap {
+  max-width: 240px;
+  white-space: normal;
+}
+
+/* ============= STATUS PILLS ============= */
+.pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.pill-neutre { background: var(--bg-subtle); color: var(--texte); }
+.pill-nouvelle { background: #e9efff; color: #2e47a8; }
+.pill-en-cours { background: #fff4d6; color: #8a5a00; }
+.pill-livree { background: #e0f2e4; color: #1f6b2e; }
+.pill-distribuee { background: #dff2f0; color: #126b63; }
+.pill-terminee { background: #efefef; color: #5b5b60; }
+.pill-recu { background: #e0f2e4; color: #1f6b2e; }
+.pill-distribue { background: #dff2f0; color: #126b63; }
+
+[data-theme="dark"] .pill-nouvelle { background: #1a2f63; color: #b9c9ff; }
+[data-theme="dark"] .pill-en-cours { background: #3a2e0a; color: #f5d78a; }
+[data-theme="dark"] .pill-livree { background: #153d1f; color: #a8e2b6; }
+[data-theme="dark"] .pill-distribuee { background: #123a36; color: #9edfd7; }
+[data-theme="dark"] .pill-terminee { background: #2a2a2d; color: #bcbcc2; }
+[data-theme="dark"] .pill-recu { background: #153d1f; color: #a8e2b6; }
+[data-theme="dark"] .pill-distribue { background: #123a36; color: #9edfd7; }
+
+/* ============= BOUTONS ADMIN ============= */
+.btn-mini {
+  padding: 4px 10px;
+  border: 1px solid var(--bordure);
+  background: var(--bg-elevated);
+  color: var(--texte);
+  border-radius: var(--radius);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.btn-mini:hover {
+  border-color: var(--rouge);
+  color: var(--rouge);
+}
+
+.btn-danger {
+  background: var(--rouge);
+  color: #fff;
+  border-color: var(--rouge);
+}
+
+.btn-danger:hover {
+  background: var(--rouge-fonce);
+  border-color: var(--rouge-fonce);
+  color: #fff;
+}
+
+/* Bénéfice négatif : alerte rouge dans la colonne Bénéfice */
+.admin-table td.benefice-negatif {
+  color: var(--rouge);
+}
+
+/* ============= KPI ============= */
+.admin-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.kpi-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--bordure);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+
+.kpi-label {
+  font-size: 12px;
+  color: var(--texte-clair);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.kpi-value {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--texte);
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============= EMPTY STATE ============= */
+.admin-empty {
+  padding: 48px 16px;
+  text-align: center;
+  color: var(--texte-clair);
+  font-size: 14px;
+}
+
+/* ============= RESPONSIVE ============= */
+@media (max-width: 700px) {
+  .admin-main { padding: 16px; }
+  .admin-tabs { padding: 0 12px; }
+  .admin-table-wrapper { max-height: none; }
+  .admin-toolbar input[type="text"] { min-width: 140px; flex: 1; }
+}

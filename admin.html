@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administration - Boutique SRR</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/png" href="assets/logo_simple.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <!-- Détection anti-flash du thème -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('srr_theme');
+        var pref = window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', saved || pref);
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
+
+  <!-- Config runtime + données (générés au build) -->
+  <script src="js/runtime-config.js"></script>
+  <script src="js/products-data.js"></script>
+  <script src="js/admin-data.js"></script>
+
+  <!-- SheetJS : export Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body class="admin-body">
+
+  <!-- ============= GATE (mot de passe) ============= -->
+  <div class="admin-gate-overlay" id="admin-gate-overlay">
+    <div class="admin-gate">
+      <h1>Administration</h1>
+      <p>Accès réservé aux responsables de la boutique.</p>
+      <form class="admin-gate-form" id="admin-gate-form" autocomplete="off">
+        <input type="password" id="admin-password" name="admin-password"
+               placeholder="Mot de passe" autocomplete="current-password"
+               required autofocus>
+        <div class="admin-gate-error" id="admin-gate-error"></div>
+        <button type="submit" class="btn-primary btn-block">Accéder</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============= HEADER ============= -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <img src="assets/logo_simple.png" alt="Logo SRR" class="logo"
+             onerror="this.style.display='none';">
+        <div class="brand-text">
+          <div class="club-name">Société des régates Rennaises</div>
+          <div class="shop-name">Administration de la boutique</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Thème -->
+        <button class="icon-button" id="theme-toggle" aria-label="Changer de thème" title="Thème">
+          <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+          </svg>
+          <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M12.3 4.9c.4-.2.4-.8-.1-.9-1.2-.3-2.5-.4-3.9-.2-4 .7-7.2 3.9-7.8 7.9-1 5.9 3.9 11 9.9 10.3 3.7-.4 6.7-3 7.9-6.4.2-.5-.3-.9-.7-.7-4.5 1.8-9.5-1.5-9.5-6.4 0-1.4.4-2.7 1.1-3.8.1-.3.3-.5.5-.6l.6-.2z"/>
+          </svg>
+        </button>
+
+        <!-- Retour boutique -->
+        <a class="icon-button" href="index.html" title="Retour à la boutique">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M12 5.69l5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/>
+          </svg>
+          <span class="icon-button-label">Boutique</span>
+        </a>
+
+        <!-- Déconnexion -->
+        <button class="icon-button" id="admin-logout" title="Déconnexion">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+          </svg>
+          <span class="icon-button-label">Déconnexion</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============= TABS ============= -->
+  <nav class="admin-tabs" id="admin-tabs">
+    <button class="admin-tab active" data-tab="catalogue">Catalogue d'achat</button>
+    <button class="admin-tab" data-tab="commandes">Commandes<span class="tab-badge" id="badge-commandes">·</span></button>
+    <button class="admin-tab" data-tab="articles">Articles à commander<span class="tab-badge" id="badge-articles">·</span></button>
+  </nav>
+
+  <!-- ============= MAIN ============= -->
+  <main class="admin-main">
+
+    <!-- === Panel : Catalogue d'achat === -->
+    <section class="admin-panel active" id="panel-catalogue">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Catalogue d'achat</div>
+          <div class="panel-subtitle">
+            Prix fournisseur, remise, flocage, marge nette et prix de vente final.
+          </div>
+        </div>
+        <div class="panel-actions">
+          <button class="btn-mini" id="catalogue-export-xlsx">
+            Exporter Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="admin-toolbar">
+        <input type="text" id="catalogue-search" placeholder="Rechercher (produit, marque, collection)...">
+        <label for="catalogue-filter-genre">Genre :</label>
+        <select id="catalogue-filter-genre">
+          <option value="">Tous</option>
+          <option value="hommes">Hommes</option>
+          <option value="femmes">Femmes</option>
+          <option value="mixtes">Mixtes</option>
+          <option value="enfants">Enfants</option>
+        </select>
+        <label for="catalogue-filter-flocage">Flocage :</label>
+        <select id="catalogue-filter-flocage">
+          <option value="">Tous</option>
+          <option value="rien">Aucun</option>
+          <option value="coeur">Cœur</option>
+          <option value="dos">Dos</option>
+          <option value="coeur_et_dos">Cœur + Dos</option>
+        </select>
+        <div class="spacer"></div>
+        <span class="kpi-label" id="catalogue-count"></span>
+      </div>
+
+      <div class="admin-table-wrapper">
+        <table class="admin-table" id="catalogue-table">
+          <thead>
+            <tr>
+              <th>Produit</th>
+              <th>Marque / Collection</th>
+              <th>Genre</th>
+              <th>Couleurs</th>
+              <th class="numeric">Prix achat HT</th>
+              <th class="numeric">Remise</th>
+              <th class="numeric">Prix remisé</th>
+              <th>Flocage</th>
+              <th class="numeric">Coût floc.</th>
+              <th class="numeric">+Marge ×1,2</th>
+              <th class="numeric">Marge brute</th>
+              <th class="numeric">Prix vente</th>
+              <th class="numeric">Bénéfice</th>
+            </tr>
+          </thead>
+          <tbody id="catalogue-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- === Panel : Commandes === -->
+    <section class="admin-panel" id="panel-commandes">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Commandes en cours</div>
+          <div class="panel-subtitle">
+            Mise à jour du statut : nouvelle → en cours → livrée → distribuée → terminée.
+          </div>
+        </div>
+        <div class="panel-actions">
+          <button class="btn-mini" id="commandes-refresh">Actualiser</button>
+          <button class="btn-mini" id="commandes-export-xlsx">Exporter Excel</button>
+        </div>
+      </div>
+
+      <div class="admin-kpis" id="commandes-kpis"></div>
+
+      <div class="admin-toolbar">
+        <input type="text" id="commandes-search" placeholder="Rechercher (nom, email, téléphone, n° commande)...">
+        <label for="commandes-filter-statut">Statut :</label>
+        <select id="commandes-filter-statut">
+          <option value="">Tous</option>
+          <option value="Nouvelle">Nouvelle</option>
+          <option value="En cours">En cours</option>
+          <option value="Livrée">Livrée</option>
+          <option value="Distribuée">Distribuée</option>
+          <option value="Terminée">Terminée</option>
+        </select>
+        <div class="spacer"></div>
+        <span class="kpi-label" id="commandes-count"></span>
+      </div>
+
+      <div class="admin-table-wrapper">
+        <table class="admin-table" id="commandes-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>N° commande</th>
+              <th>Client</th>
+              <th>Email</th>
+              <th>Téléphone</th>
+              <th class="numeric">Articles</th>
+              <th class="numeric">Total</th>
+              <th>Statut</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="commandes-tbody"></tbody>
+        </table>
+        <div class="admin-empty" id="commandes-empty" style="display:none;">
+          Aucune commande trouvée.
+        </div>
+      </div>
+    </section>
+
+    <!-- === Panel : Articles à commander === -->
+    <section class="admin-panel" id="panel-articles">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Articles à commander</div>
+          <div class="panel-subtitle">
+            Agrégation par référence / taille / couleur. Cochez une ligne une fois reçue ou distribuée.
+          </div>
+        </div>
+        <div class="panel-actions">
+          <button class="btn-mini" id="articles-refresh">Actualiser</button>
+          <button class="btn-mini" id="articles-export-xlsx">Exporter Excel</button>
+        </div>
+      </div>
+
+      <div class="admin-kpis" id="articles-kpis"></div>
+
+      <div class="admin-toolbar">
+        <input type="text" id="articles-search" placeholder="Rechercher (référence, article, marque)...">
+        <label for="articles-filter-reception">Réception :</label>
+        <select id="articles-filter-reception">
+          <option value="">Toutes</option>
+          <option value="À recevoir">À recevoir</option>
+          <option value="Reçu">Reçu</option>
+        </select>
+        <label for="articles-filter-distribution">Distribution :</label>
+        <select id="articles-filter-distribution">
+          <option value="">Toutes</option>
+          <option value="À distribuer">À distribuer</option>
+          <option value="Distribué">Distribué</option>
+        </select>
+        <div class="spacer"></div>
+        <span class="kpi-label" id="articles-count"></span>
+      </div>
+
+      <div class="admin-table-wrapper">
+        <table class="admin-table" id="articles-table">
+          <thead>
+            <tr>
+              <th>Référence</th>
+              <th>Article</th>
+              <th>Marque</th>
+              <th>Taille</th>
+              <th>Couleur</th>
+              <th class="numeric">Qté</th>
+              <th>Client(s)</th>
+              <th>Réception</th>
+              <th>Distribution</th>
+            </tr>
+          </thead>
+          <tbody id="articles-tbody"></tbody>
+        </table>
+        <div class="admin-empty" id="articles-empty" style="display:none;">
+          Aucun article à commander.
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============= TOAST ============= -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ============= PIED DE PAGE ============= -->
+  <footer class="site-footer">
+    <p>© Société des régates Rennaises · Administration boutique</p>
+  </footer>
+
+  <!-- Logique admin (dernière à charger) -->
+  <script src="js/admin.js"></script>
+</body>
+</html>
