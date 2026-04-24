@@ -144,17 +144,21 @@ Il faudra ajouter dans le fichier products.yaml :
 
 - le prix d'achat
 - le taux de réduction (par défaut 40%)
-- le prix réduit
-- le type de flocage (rien, devant, derrière, devant et derrière)
-- le coût du flocage 
-- le prix margé (+20%)
+- le type de flocage (rien, coeur, dos, coeur et dos)
 - le prix de vente final
 
 Il faudra calculer automatiquement et ajouter dans la page catalogue d'achat :
 
-- la marge effective
+- le prix réduit
+- le coût du flocage 
+- le prix margé ( (prix réduit + coût flocage) +20%)
+- la marge effective (prix margé - (prix réduit + couût flocage) )
 
+Pour calculer le cout du flocage, il va falloir ajouter des variables dans le fichier products.yaml : 
 
+- 0€ pour "rien"
+- 2,5€ pour le flocage coeur
+- 6€ pour le flocage dos
 
 ## Livrables
 

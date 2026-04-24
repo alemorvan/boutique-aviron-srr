@@ -22,7 +22,15 @@
 #   images     : Liste de noms de fichiers (dossier images/produits/)
 #   couleurs   : Liste des couleurs disponibles pour ce modèle
 #                (les couleurs sont identiques pour tous les genres d'un modèle)
-#   description: Description détaillée (facultative)
+#   description: Description détaillée (facultative).
+#                Pour un texte qui coule sur une ligne : utiliser ">-"
+#                (les retours à la ligne sont repliés en espaces).
+#                Pour préserver les sauts de ligne (listes, puces,
+#                paragraphes) : utiliser "|-" (ou "|") et garder
+#                l'indentation. Exemple :
+#                  description: |-
+#                    Première ligne du descriptif.
+#                    Seconde ligne, affichée telle quelle.
 #
 #   genres     : Dictionnaire des variantes de genre. Chaque clé est l'un de
 #                [hommes, femmes, mixtes, enfants] et contient :

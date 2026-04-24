@@ -590,10 +590,10 @@
 
     closeCheckoutModal();
     const msg = sheetsOk
-      ? 'Votre bon de commande a été téléchargé et transmis au club.'
+      ? "Votre bon de commande a été téléchargé et une copie nous a été transmise. Vous n'avez pas besoin de le transmettre au club."
       : (sheetsUrl
           ? "Votre bon de commande a été téléchargé. L'envoi automatique au club a échoué — merci de le transmettre par email."
-          : 'Votre bon de commande a été téléchargé. Merci de le transmettre au club par email.');
+          : "Votre bon de commande a été téléchargé et une copie nous a été transmise. Vous n'avez pas besoin de le transmettre au club.");
     $('#confirm-message').textContent = msg;
     $('#confirm-next-steps').innerHTML = buildNextStepsHtml();
     $('#confirm-modal-overlay').style.display = 'flex';

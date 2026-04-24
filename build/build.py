@@ -440,7 +440,10 @@ def _build_product_cell(produit, images_dir,
     descr = produit.get("description")
     if descr:
         elements.append(Spacer(1, 1 * mm))
-        elements.append(Paragraph(descr, style_meta))
+        # reportlab Paragraph interprète \n comme un simple espace :
+        # on convertit les sauts de ligne YAML (bloc "|" ou "|-") en <br/>
+        # pour qu'ils soient visibles dans le PDF.
+        elements.append(Paragraph(descr.replace("\n", "<br/>"), style_meta))
 
     # Pour chaque genre : "Modèle XXX — prix / Tailles : ..."
     genres = produit.get("genres") or {}

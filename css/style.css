@@ -504,6 +504,9 @@ a { color: var(--rouge); text-decoration: none; }
   line-height: 1.5;
   color: var(--texte-clair);
   margin-top: 2px;
+  /* pre-line : les sauts de ligne du YAML (bloc "|" ou "|-") sont
+     rendus comme des <br>, les espaces multiples restent collapsés. */
+  white-space: pre-line;
 }
 
 .product-variants {
