@@ -37,7 +37,14 @@
 #
 # NOTE : les références SKU sont actuellement des placeholders cohérents.
 #        À remplacer par les vraies références fournisseur quand elles sont
-#        disponibles (build.py vérifie l'unicité globale des SKU).
+#        disponibles. build.py vérifie l'unicité des SKU au sein de deux
+#        buckets distincts :
+#          - "adultes" : genres hommes / femmes / mixtes
+#          - "enfants" : genre enfants
+#        Conséquence : un article adulte et un article enfant peuvent
+#        réutiliser la même référence fournisseur (fréquent chez Erima,
+#        Kappa…) sans erreur — ils resteront gérés comme deux lignes
+#        distinctes dans le panier et sur le bon de commande.
 # ============================================================================
 
 # ------------------------------------------------------------
@@ -95,26 +102,26 @@ produits:
     description: >-
       Tee-shirt technique près du corps, idéal pour les entraînements en
       bateau. Matière fonctionnelle à séchage rapide, action anti-odeur,
-      sans couture pour plus de confort.
+      sans coutures pour plus de confort.
     couleurs: ["Blanc", "Noir"]
     genres:
       mixtes:
         prix: 35.00
         tailles: ["S", "M", "L", "XL", "2XL"]
         sku:
-          Blanc: "erima-tech-1"
-          Noir:  "ERI-ATH-TEC-MX-NR"
+          Blanc: "2252117"
+          Noir:  "2252116"
       enfants:
         prix: 33.00
         tailles: ["3XS", "2XS", "XS"]
         sku:
-          Blanc: "ERI-ATH-TEC-EN-BL"
-          Noir:  "ERI-ATH-TEC-EN-NR"
+          Blanc: "2252117"
+          Noir:  "2252116"
 
   - nom: "Tee-shirt technique sans manches"
     categorie: tee_technique
     marque: "Erima"
-    collection: "Athletic"
+    collection: "Débardeur Athletic"
     modele: "Tee-shirt technique sans manches"
     images: 
     - tee_shirt_technique_sans_manches.png
@@ -128,13 +135,13 @@ produits:
         prix: 29.00
         tailles: ["S", "M", "L", "XL", "2XL"]
         sku:
-          Blanc: "ERI-ATH-TSM-HO-BL"
-          Noir:  "ERI-ATH-TSM-HO-NR"
+          Blanc: "2282401"
+          Noir:  "2282402"
 
   - nom: "Tee-shirt technique manches longues"
     categorie: tee_technique
     marque: "Erima"
-    collection: "Athletic"
+    collection: "Longsleeve Athletic"
     modele: "Tee-shirt technique manches longues"
     images:
     - tee_shirt_technique_manches_longues.png
@@ -145,17 +152,17 @@ produits:
     couleurs: ["Blanc", "Noir"]
     genres:
       hommes:
-        prix: 38.00
+        prix: 39.00
         tailles: ["S", "M", "L", "XL", "2XL"]
         sku:
-          Blanc: "ERI-ATH-TML-HO-BL"
-          Noir:  "ERI-ATH-TML-HO-NR"
+          Blanc: "2252103"
+          Noir:  "2252101"
       enfants:
         prix: 35.00
-        tailles: ["3XS", "2XS", "XS"]
+        tailles: ["3XS", "XXS", "XS"]
         sku:
-          Blanc: "ERI-ATH-TML-EN-BL"
-          Noir:  "ERI-ATH-TML-EN-NR"
+          Blanc: "2252103"
+          Noir:  "2252101"
 
   # ========== TEE-SHIRTS COTON (Erima TeamSport) ==========
 
@@ -174,25 +181,25 @@ produits:
     genres:
       hommes:
         prix: 22.00
-        tailles: ["S", "M", "L", "XL", "2XL"]
+        tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
         sku:
-          Blanc: "ERI-TSP-COT-HO-BL"
-          Noir:  "ERI-TSP-COT-HO-NR"
-          Rouge: "ERI-TSP-COT-HO-RG"
+          Blanc: "208331"
+          Noir:  "208330"
+          Rouge: "208332"
       femmes:
         prix: 22.00
         tailles: ["34", "36", "38", "40", "42", "44", "46", "48"]
         sku:
-          Blanc: "ERI-TSP-COT-FE-BL"
-          Noir:  "ERI-TSP-COT-FE-NR"
-          Rouge: "ERI-TSP-COT-FE-RG"
+          Blanc: "208371"
+          Noir:  "208370"
+          Rouge: "208372"
       enfants:
         prix: 20.00
         tailles: ["116", "128", "140", "152", "164"]
         sku:
-          Blanc: "ERI-TSP-COT-EN-BL"
-          Noir:  "ERI-TSP-COT-EN-NR"
-          Rouge: "ERI-TSP-COT-EN-RG"
+          Blanc: "208331"
+          Noir:  "208330"
+          Rouge: "208332"
 
   # ========== TEE-SHIRTS POLYESTER (Erima Liga) ==========
 
@@ -213,14 +220,14 @@ produits:
         prix: 26.00
         tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
         sku:
-          Rouge: "ERI-LIG-PMC-MX-RG"
-          Noir:  "ERI-LIG-PMC-MX-NR"
+          Rouge: "1082328"
+          Noir:  "1082331"
       enfants:
         prix: 23.00
         tailles: ["104", "116", "128", "140", "152", "164"]
         sku:
-          Rouge: "ERI-LIG-PMC-EN-RG"
-          Noir:  "ERI-LIG-PMC-EN-NR"
+          Rouge: "1082328"
+          Noir:  "1082331"
 
   - nom: "Tee-shirt polyester manches longues"
     categorie: tee_polyester
@@ -235,17 +242,17 @@ produits:
     couleurs: ["Rouge", "Noir"]
     genres:
       mixtes:
-        prix: 27.00
+        prix: 26.00
         tailles: ["S", "M", "L", "XL", "2XL", "3XL"]
         sku:
-          Rouge: "ERI-LIG-PML-MX-RG"
-          Noir:  "ERI-LIG-PML-MX-NR"
+          Rouge: "3141818"
+          Noir:  "3141821"
       enfants:
         prix: 25.00
         tailles: ["116", "128", "140", "152", "164"]
         sku:
-          Rouge: "ERI-LIG-PML-EN-RG"
-          Noir:  "ERI-LIG-PML-EN-NR"
+          Rouge: "3141818"
+          Noir:  "3141821"
 
   # ========== PULLS ET VESTES (Erima Liga) ==========
 
@@ -258,20 +265,21 @@ produits:
     - veste_a_capuche.png
     description: >-
       Veste à capuche 100 % polyester, coupe mixte.
-    couleurs: ["Noir", "Rouge"]
+      Matière fonctionnelle résistante
+      - Col haut avec capuche et protège-menton
+      - Poches zippées latérales
+    couleurs: ["Rouge"]
     genres:
       mixtes:
         prix: 45.00
         tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
         sku:
-          Noir:  "ERI-LIG-VCC-MX-NR"
-          Rouge: "ERI-LIG-VCC-MX-RG"
+          Rouge: "1032326"
       enfants:
         prix: 42.00
         tailles: ["104", "116", "128", "140", "152", "164"]
         sku:
-          Noir:  "ERI-LIG-VCC-EN-NR"
-          Rouge: "ERI-LIG-VCC-EN-RG"
+          Rouge: "1032326"
 
   - nom: "Veste d'entraînement"
     categorie: veste
@@ -282,20 +290,21 @@ produits:
     - veste_entrainement.png
     description: >-
       Veste d'entraînement 100 % polyester, coupe mixte.
-    couleurs: ["Noir", "Rouge"]
+      Matière fonctionnelle résistante
+      - Fermeture éclair avec protège-menton
+      - Poches zippées latérales
+    couleurs: ["Rouge"]
     genres:
       mixtes:
         prix: 40.00
         tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
         sku:
-          Noir:  "ERI-LIG-VET-MX-NR"
-          Rouge: "ERI-LIG-VET-MX-RG"
+          Rouge: "1032319"
       enfants:
         prix: 36.00
         tailles: ["104", "116", "128", "140", "152", "164"]
         sku:
-          Noir:  "ERI-LIG-VET-EN-NR"
-          Rouge: "ERI-LIG-VET-EN-RG"
+          Rouge: "1032319"
 
   - nom: "Sweat d'entraînement"
     categorie: veste
@@ -306,20 +315,20 @@ produits:
     - sweat_entrainement.png
     description: >-
       Sweat d'entraînement 100 % polyester, coupe mixte.
-    couleurs: ["Noir", "Rouge"]
+      Matière fonctionnelle résistante
+      - Fermeture éclair avec protège-menton
+    couleurs: ["Rouge"]
     genres:
       mixtes:
         prix: 42.00
         tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
         sku:
-          Noir:  "ERI-LIG-SWE-MX-NR"
-          Rouge: "ERI-LIG-SWE-MX-RG"
+          Rouge: "1262301"
       enfants:
         prix: 38.00
         tailles: ["104", "116", "128", "140", "152", "164"]
         sku:
-          Noir:  "ERI-LIG-SWE-EN-NR"
-          Rouge: "ERI-LIG-SWE-EN-RG"
+          Rouge: "1262301"
 
   # ========== PANTALONS (Miami) ==========
 
@@ -332,24 +341,24 @@ produits:
     - pantalon_entrainement.png
     description: >-
       Pantalon d'entraînement 100 % polyester. Coupe adaptée
-      hommes, femmes et enfants.
+      hommes, femmes et enfants. Sans marquage SRR.
     couleurs: ["Noir"]
     genres:
       hommes:
         prix: 34.00
         tailles: ["S", "M", "L", "XL", "2XL", "3XL"]
         sku:
-          Noir: "ERI-MIA-PAN-HO-NR"
+          Noir: "1102401"
       femmes:
         prix: 34.00
         tailles: ["34", "36", "38", "40", "42", "44", "46", "48"]
         sku:
-          Noir: "ERI-MIA-PAN-FE-NR"
+          Noir: "1102403"
       enfants:
         prix: 30.00
         tailles: ["116", "128", "140", "152", "164"]
         sku:
-          Noir: "ERI-MIA-PAN-EN-NR"
+          Noir: "1102401"
 
   # ========== POLOS (CMPT 3 Wings) ==========
 
@@ -362,10 +371,22 @@ produits:
     - polo.png
     description: >-
       Polo polycoton unisexe, coupe mixte.
-    couleurs: ["Rouge"]
+      Tissu piqué fin.
+      - Coupe régulière
+      - Poignets côtelés avec bandes contrastées
+      - Hommes : Col polo avec boutonnière à 3 boutons
+      - Femmes: Col polo avec boutonnière à 4 boutons
+    couleurs: ["Rouge", "Noir"]
     genres:
-      mixtes:
+      hommes:
         prix: 39.00
-        tailles: ["XXS", "XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"]
+        tailles: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"]
         sku:
-          Rouge: "CMP-3W-POL-MX-RG"
+          Rouge: "2112510"
+          Noir: "2112511"
+      femmes:
+        prix: 39.00
+        tailles: ["34", "36", "38", "40", "42", "44", "46"]
+        sku:
+          Rouge: "2112537"
+          Noir: "2112538"

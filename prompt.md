@@ -116,7 +116,7 @@ Les articles de la boutique pourront être gérés via ce fichier de configurati
 - une description
 - les genres disponibles hommes, femmes, mixtes, ou enfants
 - les couleurs
-- la référence fournisseur (non visible des utilisateurs). Il y a une référence par couple modèle/couleur/genre (homme, femme, mixte, enfant)
+- la référence fournisseur (non visible des utilisateurs). Il y a une référence par couple modèle/couleur/genre (homme, femme, mixte, enfant). Un article homme ou mixte et un article enfant doivent pouvoir avoir le même sku mais être gérés séparéments.
 - le nom d'une ou plusieurs images que je stockerai dans le dossier image du projet. Les images pourront défilées dans la fiche article manuellement (carroussel).
 - la liste des tailles pour chaque couple modèle/genre
 - la liste des couleurs disponibles pour chaque modèle
@@ -126,6 +126,35 @@ Le yaml ne doit service que pour la génération des pages statiques. Il ne doit
 Ce fichier de configuration sera fourni sous forme de template.
 
 L'URL du google sheet devra être fourni en variable dans le docker-compose.yml ou sous forme de variable d'environnement.
+
+## Page d'administration
+
+Un module d'administration viendra compléter la boutique.
+
+- Protection par mot de passe (défini dans les variables d'environnements)
+- Liste des commandes en cours issue du document google sheet (avec export excel possible),
+- liste des articles à commander issue du document google sheet (avec export excel possible)
+- Possibilité de passer les commandes à en cours, livrée, distributée, terminée (avec mise à jour du document google sheet)
+- Possibilité de marquer les articles commandés à reçu, distribués (avec mise à jour du document google sheet)
+
+Un catalogue d'achat avec pour chaque article/genre.
+Affichage sous forme tabulaire avec possibilité d'export excel.
+
+Il faudra ajouter dans le fichier products.yaml : 
+
+- le prix d'achat
+- le taux de réduction (par défaut 40%)
+- le prix réduit
+- le type de flocage (rien, devant, derrière, devant et derrière)
+- le coût du flocage 
+- le prix margé (+20%)
+- le prix de vente final
+
+Il faudra calculer automatiquement et ajouter dans la page catalogue d'achat :
+
+- la marge effective
+
+
 
 ## Livrables
 

@@ -76,6 +76,18 @@ GENRE_LABELS = {
     "enfants": "ENFANTS",
 }
 
+# Un SKU doit être unique par "bucket". Les genres adulte (hommes, femmes,
+# mixtes) partagent le même bucket ; les enfants ont le leur. Conséquence :
+# un article homme et un article enfant peuvent réutiliser la même référence
+# fournisseur (fréquent chez Erima, Kappa…) sans déclencher d'erreur, tout
+# en étant gérés séparément par l'application.
+SKU_BUCKETS = {
+    "hommes": "adultes",
+    "femmes": "adultes",
+    "mixtes": "adultes",
+    "enfants": "enfants",
+}
+
 
 # ==========================================================
 # Chargement et validation
@@ -97,6 +109,9 @@ def validate_config(data: dict) -> None:
             raise ValueError(f"Clé manquante dans le YAML : '{key}'")
 
     category_ids = {c["id"] for c in data["categories"]}
+    # Clé : (bucket, sku) — permet à un article homme et un article enfant
+    # de partager la même référence fournisseur sans erreur, mais interdit
+    # les doublons au sein d'un même bucket.
     seen_skus = {}
 
     for idx, p in enumerate(data["produits"]):
@@ -172,14 +187,20 @@ def validate_config(data: dict) -> None:
                         f"'couleurs' {couleurs}"
                     )
 
-            # Détection des doublons de SKU (doivent être uniques globalement)
+            # Détection des doublons de SKU au sein d'un même bucket.
+            # Les buckets (adultes / enfants) sont séparés — un SKU peut donc
+            # apparaître à la fois dans une variante adulte et dans une
+            # variante enfant sans conflit.
+            bucket = SKU_BUCKETS[genre_key]
             for couleur, ref in sku_dict.items():
-                if ref in seen_skus:
+                key = (bucket, ref)
+                if key in seen_skus:
                     raise ValueError(
-                        f"Référence fournisseur dupliquée '{ref}' : "
-                        f"{seen_skus[ref]} et {prod_label}/{genre_key}/{couleur}"
+                        f"Référence fournisseur dupliquée '{ref}' dans le "
+                        f"bucket '{bucket}' : "
+                        f"{seen_skus[key]} et {prod_label}/{genre_key}/{couleur}"
                     )
-                seen_skus[ref] = f"{prod_label}/{genre_key}/{couleur}"
+                seen_skus[key] = f"{prod_label}/{genre_key}/{couleur}"
 
 
 # ==========================================================

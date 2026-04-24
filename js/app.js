@@ -421,8 +421,13 @@
       image: (produit.images && produit.images[0]) || '',
     };
 
+    // Dédup par (sku, genre, taille) : un même SKU peut être partagé
+    // entre une variante adulte et une variante enfant — ils doivent
+    // rester des lignes de commande distinctes dans le panier.
     const existing = state.panier.find(i =>
-      i.sku === item.sku && i.taille === item.taille
+      i.sku === item.sku &&
+      i.genre === item.genre &&
+      i.taille === item.taille
     );
     if (existing) existing.qty += item.qty;
     else state.panier.push(item);
