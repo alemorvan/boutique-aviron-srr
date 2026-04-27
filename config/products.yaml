@@ -490,7 +490,7 @@ produits:
           Rouge: "2112537"
           Noir: "2112538"
 
-  # ========== POLOS (CMPT 3 Wings) ==========
+  # ========== Chaussettes SRR ==========
 
   - nom: "Chaussettes SRR"
     categorie: divers
@@ -508,6 +508,6 @@ produits:
         taux_reduction: 0.0      # taux de remise fournisseur (40% par défaut)
         type_flocage: "rien"      # rien | coeur | dos | coeur_et_dos
         prix_vente_final: 10.00
-        tailles: ["36-39", "40-42", "43-46"]
+        tailles: ["36-41", "42-46"]
         sku:
           Rouge: "SRR-CHAUSS-R"

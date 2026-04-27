@@ -1047,20 +1047,23 @@ a { color: var(--rouge); text-decoration: none; }
   .filters-inner { padding: 12px 16px; flex-direction: column; align-items: stretch; gap: 12px; }
   .filter-group { flex-direction: column; align-items: flex-start; }
   .catalogue { padding: 20px 16px; }
-  .products-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+  /* Tablette : 2 colonnes max, plus jamais 3 cartes serrées */
+  .products-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
   .category-header h2 { font-size: 20px; }
   .form-row { grid-template-columns: 1fr; }
   .filters { top: 72px; }
   .header-actions { gap: 6px; }
 }
 
-@media (max-width: 480px) {
-  .products-grid { grid-template-columns: 1fr 1fr; }
-  .product-body { padding: 12px; }
-  .product-name { font-size: 14px; }
-  .product-price { font-size: 17px; }
+/* Mobile : une seule carte par ligne pour que la liste des tailles
+   et les libellés des variantes restent lisibles sur une ligne. */
+@media (max-width: 600px) {
+  .products-grid { grid-template-columns: 1fr; gap: 16px; }
+  .product-card { max-width: 520px; margin: 0 auto; }
+  .product-body { padding: 14px; }
+  .product-name { font-size: 16px; }
+  .product-price { font-size: 18px; }
 }
-ge); }
 
 /* ============= MODALES ============= */
 .modal-overlay {
@@ -1238,13 +1241,8 @@ ge); }
 .pay-row { padding: 4px 0; }
 .pay-label { font-weight: 600; margin-right: 4px; }
 .pay-iban {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 13px;
-  padding: 2px 6px;
-  background: var(--bg-surface);
-  border: 1px solid var(--bordure);
-  border-radius: 3px;
-  display: inline-block;
-  letter-spacing: 0.03em;
+  font-family: 'Courier New', Consolas, monospace;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   word-break: break-all;
 }
